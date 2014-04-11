@@ -12,7 +12,7 @@ namespace samson\social;
  * @copyright 2013 SamsonOS
  * @version
  */
-class VK extends Core
+class VK extends Network
 {
     public $id = 'vk';
 
