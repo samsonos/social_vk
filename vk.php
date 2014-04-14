@@ -12,7 +12,7 @@ namespace samson\social;
  * @copyright 2013 SamsonOS
  * @version
  */
-class VK extends Network
+class VK extends \samson\social\network\Network
 {
     public $id = 'vk';
 
@@ -23,6 +23,8 @@ class VK extends Network
     public $tokenURL = 'https://oauth.vk.com/access_token';
 
     public $userURL = 'https://api.vk.com/method/users.get';
+	
+	public $requirements = array('socialnetwork');
 
     public function __HANDLER()
     {
