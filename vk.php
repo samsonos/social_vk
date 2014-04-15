@@ -4,7 +4,7 @@
 * on 11.02.14 at 11:35
 */
 
-namespace samson\social\vk;
+namespace samson\social;
 
 /**
  *
