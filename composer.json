@@ -2,7 +2,7 @@
 	"name":"samsonos/social_vk",
 	"author":"Vitaly Iegorov <egorov@samsonos.com>",
 	"version":"0.0.1",
-	"require":{"samsonos/social_network":"dev-master"},
+	"require":{"samsonos/social_network":"*"},
 	"license":"Open Software License (OSL) v 3.0",
 	"homepage":"http://samsonos.com/"
 }
