@@ -51,16 +51,22 @@ class VK extends \samson\social\Network
 
             // take user's information using access token
             if (isset($token['access_token'])) {
-                $this->setUser($this->get($this->userURL, array(
+
+                // Perform API request to get user data
+                $request = $this->get($this->userURL, array(
                     'uids' => $token['user_id'],
-                    'fields' => 'uid,first_name,last_name,screen_name,sex,bdate,photo_big',
+                    'fields' => 'uid,first_name,last_name,screen_name,sex,bdate,photo',
                     'access_token' => $token['access_token']
-                )));
+                ));
 
-
+                // If we have successfully received user data
+                if(isset($request['response'][0])) {
+                    $this->setUser($request);
+                }
             }
         }
 
+        // Call standart behaviour
         parent::__token();
     }
 
@@ -72,6 +78,7 @@ class VK extends \samson\social\Network
         $this->user->name = $user['response'][0]['first_name'];
         $this->user->surname = $user['response'][0]['last_name'];
         $this->user->socialID = $user['response'][0]['uid'];
+        $this->user->photo = $user['response'][0]['photo'];
 
         parent::setUser($user);
     }
