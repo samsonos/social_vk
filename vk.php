@@ -45,6 +45,13 @@ class VK extends \samson\social\Network
             'access_token' => $this->token
         ));
 
+        // Pointer to response object
+        $response = & $response['response'];
+        // If we have recieved friends list
+        if (isset($response) && is_array($response)) {
+
+        }
+
         trace($request);
     }
 
@@ -86,16 +93,16 @@ class VK extends \samson\social\Network
         parent::__token();
     }
 
-    protected function setUser(array $user)
+    protected function setUser(array $userData, & $user = null)
     {
-        $this->user = new User();
-        $this->user->birthday = $user['response'][0]['bdate'];
-        $this->user->gender = $user['response'][0]['sex'];
-        $this->user->name = $user['response'][0]['first_name'];
-        $this->user->surname = $user['response'][0]['last_name'];
-        $this->user->socialID = $user['response'][0]['uid'];
-        $this->user->photo = $user['response'][0]['photo'];
+        $user = new User();
+        $user->birthday = $userData['response'][0]['bdate'];
+        $user->gender = $userData['response'][0]['sex'];
+        $user->name = $userData['response'][0]['first_name'];
+        $user->surname = $userData['response'][0]['last_name'];
+        $user->socialID = $userData['response'][0]['uid'];
+        $user->photo = $userData['response'][0]['photo'];
 
-        parent::setUser($user);
+        parent::setUser($userData, $user);
     }
 }
