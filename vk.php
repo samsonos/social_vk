@@ -23,8 +23,8 @@ class VK extends \samson\social\Network
     public $tokenURL = 'https://oauth.vk.com/access_token';
 
     public $userURL = 'https://api.vk.com/method/users.get';
-	
-	public $requirements = array('socialnetwork');
+
+    public $friendsURL = 'https://api.vk.com/method/friends.get';
 
     public function __HANDLER()
     {
@@ -34,6 +34,18 @@ class VK extends \samson\social\Network
             'redirect_uri'  => $this->returnURL(),
             'response_type' => 'code'
         ));
+    }
+
+    public function friends()
+    {
+        // Perform API request to get user data
+        $request = $this->get($this->friendsURL, array(
+            'uid' => $this->user[$this->dbIdField],
+            'fields' => 'uid,first_name,last_name,screen_name,sex,bdate,photo',
+            'access_token' => $this->token
+        ));
+
+        trace($request);
     }
 
     public function __token()
@@ -59,6 +71,10 @@ class VK extends \samson\social\Network
                     'access_token' => $token['access_token']
                 ));
 
+                // Save access token to session
+                $this->token = $token['access_token'];
+                $_SESSION[self::SESSION_PREFIX.'_'.$this->id] = $this->token;
+
                 // If we have successfully received user data
                 if(isset($request['response'][0])) {
                     $this->setUser($request);
@@ -66,7 +82,7 @@ class VK extends \samson\social\Network
             }
         }
 
-        // Call standart behaviour
+        // Call standard behaviour
         parent::__token();
     }
 
