@@ -26,33 +26,63 @@ class VK extends \samson\social\Network
 
     public $friendsURL = 'https://api.vk.com/method/friends.get';
 
+    public $wallPostURL = 'https://api.vk.com/method/wall.post';
+
     public function __HANDLER()
     {
         // Send http get request to retrieve VK code
         $this->redirect($this->socialURL, array(
             'client_id'     => $this->appCode,
-            'redirect_uri'  => $this->returnURL(),
+            'redirect_uri'  => 'http://oauth.vk.com/blank.html',//$this->returnURL(),
+            'scope'         => 'wall,offline',
             'response_type' => 'code'
         ));
     }
 
-    public function friends()
+    public function wallPost($userID, $message = null, $attachments = null)
     {
+        // Perform API request to get user data
+        $request = $this->get($this->wallPostURL, array(
+            'owner_id' => $userID,
+            'message' => $message,
+            'attachments' => $attachments,
+            'access_token' => $this->token
+        ));
+
+        trace($request);
+    }
+
+    public function & friends($count = null, $offset = null)
+    {
+        $result = array();
+
         // Perform API request to get user data
         $request = $this->get($this->friendsURL, array(
             'uid' => $this->user[$this->dbIdField],
             'fields' => 'uid,first_name,last_name,screen_name,sex,bdate,photo',
+            'count' => $count,
+            'offset' => $offset,
             'access_token' => $this->token
         ));
 
         // Pointer to response object
-        $response = & $response['response'];
-        // If we have recieved friends list
-        if (isset($response) && is_array($response)) {
+        $response = & $request['response'];
 
+        // If we have received friends list
+        if (isset($response) && is_array($response)) {
+            foreach ($response as $friendData) {
+                // Create new user object
+                $friend = new User();
+
+                // Fill user object with data
+                $this->setUser(array('response'=>array('0'=>$friendData)), $friend);
+
+                // Add filled object to result collection
+                $result[] = $friend;
+            }
         }
 
-        trace($request);
+        return $result;
     }
 
     public function __token()
@@ -84,7 +114,7 @@ class VK extends \samson\social\Network
 
                 // If we have successfully received user data
                 if(isset($request['response'][0])) {
-                    $this->setUser($request);
+                    $this->setUser($request, $this->user);
                 }
             }
         }
@@ -96,8 +126,8 @@ class VK extends \samson\social\Network
     protected function setUser(array $userData, & $user = null)
     {
         $user = new User();
-        $user->birthday = $userData['response'][0]['bdate'];
-        $user->gender = $userData['response'][0]['sex'];
+        $user->birthday = isset($userData['response'][0]['bdate']) ? $userData['response'][0]['bdate'] : '';
+        $user->gender = isset($userData['response'][0]['sex']) ? $userData['response'][0]['sex'] :'';
         $user->name = $userData['response'][0]['first_name'];
         $user->surname = $userData['response'][0]['last_name'];
         $user->socialID = $userData['response'][0]['uid'];
