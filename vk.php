@@ -4,7 +4,7 @@
 * on 11.02.14 at 11:35
 */
 
-namespace samson\social;
+namespace samson\social\vk;
 
 /**
  *
@@ -33,7 +33,7 @@ class VK extends \samson\social\Network
         // Send http get request to retrieve VK code
         $this->redirect($this->socialURL, array(
             'client_id'     => $this->appCode,
-            'redirect_uri'  => 'http://oauth.vk.com/blank.html',//$this->returnURL(),
+            'redirect_uri'  => $this->returnURL(),
             'scope'         => 'wall,offline',
             'response_type' => 'code'
         ));
@@ -125,7 +125,7 @@ class VK extends \samson\social\Network
 
     protected function setUser(array $userData, & $user = null)
     {
-        $user = new User();
+        $user = new \samson\social\User();
         $user->birthday = isset($userData['response'][0]['bdate']) ? $userData['response'][0]['bdate'] : '';
         $user->gender = isset($userData['response'][0]['sex']) ? $userData['response'][0]['sex'] :'';
         $user->name = $userData['response'][0]['first_name'];
